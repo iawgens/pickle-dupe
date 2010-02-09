@@ -1,6 +1,6 @@
 = pickle-dupe
 
-Description goes here.
+Pickle-dupe is an add-on to pickle that works with Dupe, an Active Resource mocking/factory.
 
 == Note on Patches/Pull Requests
  
@@ -14,4 +14,4 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2010 gcheong. See LICENSE for details.
+Copyright (c) 2010 iawgens. See LICENSE for details.
