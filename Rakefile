@@ -5,12 +5,12 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "pickle-dupe"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "gary.s.cheong@aexp.com"
+    gem.summary = %Q{Pickle that works with Dupe, an Active Resource mocking/factory}
+    gem.description = %Q{Dupe is Active Resource mocking/factory for use with cucumber. Pickle-dupe is a pickle add-on that works with Dupe}
+    gem.email = "gary.s.cheong@gmail.com"
     gem.homepage = "http://github.com/iawgens/pickle-dupe"
-    gem.authors = ["gcheong"]
-    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
+    gem.authors = ["iawgens"]
+    gem.add_dependency "pickle",">=0.2.1"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
