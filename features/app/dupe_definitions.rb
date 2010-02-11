@@ -11,6 +11,9 @@ Dupe.define :recipe do |recipe|
     Dupe.next :recipe_title
   end
   
+  # to define has many association
+  recipe.ingredients []
+  
   # recipe.ingredients do |ingredients|
   #     ingredients.split(', ').map do |ingredient|
   #       Dupe.find(:ingredient) do |i|

@@ -14,7 +14,8 @@ Feature: I can easily create models from dupe
   Scenario: I create stub recipes, and see if it looks right
     Given 3 recipes exist
 	  Then 3 recipes should exist
-	  
+	
+	@association
 	Scenario: I create some recipes, and some ingredients
 	  Given a recipe: "one" exists
 	  And an ingredient exists with recipe: recipe "one"
@@ -27,17 +28,18 @@ Feature: I can easily create models from dupe
     # And an ingredient exists with recipe: the fancy recipe
 	  
 	  Then the first ingredient should be ingredient of the recipe: "one"
-	  And the 2nd ingredient should be the ingredient of recipe "one"
-	  And the last ingredient should be the recipe of recipe "two"
+	  And the 2nd ingredient should be ingredient of recipe "one"
+	  And the last ingredient should be ingredient of recipe "two"
 	  
 	  Then the first ingredient should be in recipe "one"'s ingredients
 	  And the 2nd ingredient should be in recipe: "one"'s ingredients
 	  And the last ingredient should be in recipe "two"'s ingredients
 	  And recipe "two" should be the last ingredient's recipe
 	  
-	  But the first ingredient should not be in the fancy recipe's ingredients
-	  And the last ingredient should not be in recipe "one"'s ingredients
-	  And the fancy recipe should not be the first ingredient's recipe
+	  #But the first ingredient should not be in the fancy recipe's ingredients
+	  But the last ingredient should not be in recipe "one"'s ingredients
+	  And recipe "two" should not be the first ingredient's recipe
+	  #And the fancy recipe should not be the first ingredient's recipe
  
   Scenario: Create an ingredient and a recipe refs in a table
     Given 2 recipes exist
