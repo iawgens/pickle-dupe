@@ -49,6 +49,8 @@ end
 
 # assert model is not in another model's has_many assoc
 Then(/^#{capture_model} should not be (?:in|one of|amongst) #{capture_model}(?:'s)? (\w+)$/) do |target, owner, association|
+  # require 'ruby-debug'
+  # debugger
   model!(owner).send(association).should_not include(model!(target))
 end
 
