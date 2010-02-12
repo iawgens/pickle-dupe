@@ -33,22 +33,9 @@ module Pickle
           # if association_model attribute_template's key matches dupe_object's pluralized name, then
           # assign, else, try with singular name
           if association_object.__model__.schema.attribute_templates.keys.include?(has_many_association)
-            require 'ruby-debug'
-            debugger
-            # # assign has_many_association
-            # has_many_values = []
-            # has_many_values = association_object.send(has_many_association)
-            # #FIXME: 02/11/2010 GC - This statement assigns an object to the attributes right away, how is it possible?!!
-            # has_many_values << dupe_object
-            # association_object.send("#{has_many_association}=",has_many_values)
-            
-            #trying with eval instead
-            #eval("association_object.#{has_many_association}<<dupe_object")
-            
-            #trying with hash
             association_object[has_many_association] << dupe_object
           else #assume it's a has_one association
-            association_object.send("#{has_one_association}=",dupe_object)
+            association_object[has_one_association] = dupe_object
           end 
         }
         
