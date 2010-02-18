@@ -11,8 +11,11 @@ Dupe.define :recipe do |recipe|
     Dupe.next :recipe_title
   end
   
-  # to define has many association
+  # has_many ingredients
   recipe.ingredients []
+  
+  # has_many steps
+  recipe.steps []
   
   # recipe.ingredients do |ingredients|
   #     ingredients.split(', ').map do |ingredient|
@@ -27,6 +30,13 @@ Dupe.define :recipe do |recipe|
   end
 end
 
+Dupe.define :step do |step|
+  step.uniquify :title
+  
+  step.after_create do |s|
+    s.label = labelize(s.title)
+  end
+end
 
 # Not Applicable in Dupe
 # Dupe.define :fancy_recipe, :class => Recipe do |t|
@@ -35,6 +45,9 @@ end
 
 Dupe.define :ingredient do |ingredient|
   ingredient.uniquify :name
+  
+  # belongs_to_many recipes
+  ingredient.recipes []
   
   ingredient.after_create do |i|
     i.label = labelize(i.name)

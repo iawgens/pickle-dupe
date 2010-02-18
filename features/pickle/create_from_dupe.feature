@@ -15,7 +15,7 @@ Feature: I can easily create models from dupe
     Given 3 recipes exist
 	  Then 3 recipes should exist
 	
-	@association
+	@many_to_one_association
 	Scenario: I create some recipes, and some ingredients
 	  Given a recipe: "one" exists
 	  And an ingredient exists with recipe: recipe "one"
@@ -40,6 +40,18 @@ Feature: I can easily create models from dupe
 	  But the last ingredient should not be in recipe "one"'s ingredients
 	  And recipe "two" should not be the first ingredient's recipe
 	  #And the fancy recipe should not be the first ingredient's recipe
+	
+  #FIXME: Test for many to many association
+  @many_to_many_association
+	Scenario: I create some ingredients and associate with some recipe
+	  Given an ingredient: "one" exists
+	  And an ingredient: "two" exists
+	  And a recipe exists with ingredients: ingredient "one"
+	  And a recipe exists with ingredients: ingredient "one", ingredient "two"
+	  Then the first recipe should be in ingredient "one"'s recipes
+	  And the last recipe should be in ingredient "one"'s recipes
+	  And the last recipe should be in ingredient "two"'s recipes
+	  And the first recipe should not be in ingredient "two"'s recipes
  
   Scenario: Create an ingredient and a recipe refs in a table
     Given 2 recipes exist

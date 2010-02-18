@@ -21,15 +21,22 @@ module Pickle
       end
     
       def create(attrs = {})
+        #recipe
         dupe_object = ::Dupe.create(@name, attrs)
         
+        
         # getting a collection of association objects
+        #ingredients
         association_objects = attrs.select {|k,v| v.kind_of?(::Dupe::Database::Record)}.collect {|i| i[1]}
         
+        #pass in ingredients
+        #recipe
+        has_one_association = dupe_object.__model__.name
+        #recipes
+        has_many_association = has_one_association.to_s.pluralize.to_sym
+        
+        #FIXME: Rename variables or add comments to make it more readable!!
         association_objects.each {|association_object|
-          has_one_association = dupe_object.__model__.name
-          has_many_association = has_one_association.to_s.pluralize.to_sym
-
           # if association_model attribute_template's key matches dupe_object's pluralized name, then
           # assign, else, try with singular name
           if association_object.__model__.schema.attribute_templates.keys.include?(has_many_association)
