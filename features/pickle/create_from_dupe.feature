@@ -22,11 +22,11 @@ Feature: I can easily create models from dupe
 	  And another ingredient exists with recipe: recipe "one"
 	  And a recipe: "two" exists
 	  And an ingredient exists with recipe: recipe "two"
-	  
+
     # TODO: GC 02/05/2010 named factory definition is not yet supported by dupe 
     # And a fancy recipe exists
     # And an ingredient exists with recipe: the fancy recipe
-	  
+
 	  Then the first ingredient should be ingredient of the recipe: "one"
 	  And the 2nd ingredient should be ingredient of recipe "one"
 	  And the last ingredient should be ingredient of recipe "two"
@@ -43,16 +43,16 @@ Feature: I can easily create models from dupe
 	
   #FIXME: Test for many to many association
   @many_to_many_association
-	Scenario: I create some ingredients and associate with some recipe
+	Scenario: I create some ingredients and associate to some recipe
 	  Given an ingredient: "one" exists
 	  And an ingredient: "two" exists
 	  And a recipe exists with ingredients: ingredient "one"
-	  And a recipe exists with ingredients: ingredient "one", ingredient "two"
+	  And a recipe exists with ingredients: [ingredient "one", ingredient "two"]
 	  Then the first recipe should be in ingredient "one"'s recipes
 	  And the last recipe should be in ingredient "one"'s recipes
 	  And the last recipe should be in ingredient "two"'s recipes
 	  And the first recipe should not be in ingredient "two"'s recipes
- 
+
   Scenario: Create an ingredient and a recipe refs in a table
     Given 2 recipes exist
     And the following ingredients exist:
