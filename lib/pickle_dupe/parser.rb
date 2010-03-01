@@ -36,7 +36,7 @@ module Pickle
     end
     
     def match_model_in_values
-      "\\[?(?:#{match_model}, )*#{match_model}\\]?"
+      "\\[(?:#{match_model}, )*#{match_model}\\]"
     end
   
   private

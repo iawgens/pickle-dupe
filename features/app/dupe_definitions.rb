@@ -17,14 +17,6 @@ Dupe.define :recipe do |recipe|
   # has_many steps
   recipe.steps []
   
-  # recipe.ingredients do |ingredients|
-  #     ingredients.split(', ').map do |ingredient|
-  #       Dupe.find(:ingredient) do |i|
-  #         i.label == labelize(ingredient)
-  #       end
-  #     end
-  #   end
-  
   recipe.after_create do |r|
     r.label = labelize(r.title)
   end
@@ -46,7 +38,7 @@ end
 Dupe.define :ingredient do |ingredient|
   ingredient.uniquify :name
   
-  # belongs_to_many recipes
+  #belongs_to_many recipes
   ingredient.recipes []
   
   ingredient.after_create do |i|
