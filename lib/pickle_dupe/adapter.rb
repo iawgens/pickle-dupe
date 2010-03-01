@@ -22,7 +22,7 @@ module Pickle
     
       def create(attrs = {})
         duped_object = ::Dupe.create(@name, attrs)
-        assign_missing_associations(duped_object, attrs)
+        assign_missing_associations(duped_object, attrs) unless attrs.blank?
         
         return duped_object
       end
@@ -72,33 +72,47 @@ module Pickle
       #   Dupe.create :recipe, {:ingredients => [<Duped::Ingredient>,<Duped::Ingredient>]}
       #
       def assign_missing_associations(duped_object, attrs)
-          has_one_association = duped_object.__model__.name #=> :direction_step
-          has_many_association = has_one_association.to_s.pluralize.to_sym #=> :direction_steps
+        association_objects = collect_association_objects(attrs)
+        association_objects.each {|association_object|
           
-          association_objects = collect_association_objects(attrs)
-          association_objects.each {|association_object|
-            
-            # When a pickle step causes Dupe to do the following:
-            # 
-            #  Dupe.create(:direction_step, :recipe => @recipe)
-            #
-            # Then duped_object would be of class Dupe::DirectionStep and association_object would be of
-            # class Dupe::Recipe.
-            #
-            # The following would check for the existence of the key :direction_steps
-            # in the duped recipe's definition
-            if association_object.__model__.schema.attribute_templates.keys.include?(has_many_association)
-              association_object[has_many_association] << duped_object
-            else #assume it's a has_one association
-              association_object[has_one_association] = duped_object
-            end 
-          }
+          # When a pickle step causes Dupe to do the following:
+          # 
+          #  Dupe.create(:direction_step, :recipe => @recipe)
+          #
+          # Then duped_object would be of class Dupe::DirectionStep and association_object would be of
+          # class Dupe::Recipe.
+          #
+          if association_object.kind_of?(Array)
+            association_object.each {|a|
+              assign_association(a, duped_object)
+            }
+          else
+            assign_association(association_object, duped_object)
+          end
+        }
+      end
+      
+      def assign_association(association_object, duped_object)
+        has_one_association = duped_object.__model__.name #=> :direction_step
+        has_many_association = has_one_association.to_s.pluralize.to_sym #=> :direction_steps
+        
+        # The following would check for the existence of the key :direction_steps
+        # in the duped recipe's definition 
+        if association_object.__model__.schema.attribute_templates.keys.include?(has_many_association)
+          association_object[has_many_association] << duped_object
+        else #assume it's a has_one association
+          association_object[has_one_association] = duped_object
+        end
       end
       
       # Selecting association objects from the attributes hash and return as array. Association objects are of class
       # Dupe::Database::Record
+      # Given :association => <#Duped::Ingredient name="ingredient 1 name" recipes=[] label="ingredient-1-name" id=1> or
+      # :association => [<#Duped...>] will return [[<#Duped...>,<#Duped...>],<#Duped...>]
       def collect_association_objects(attrs)
-        attrs.select {|k,v| v.kind_of?(::Dupe::Database::Record)}.collect {|i| i[1]}
+        attrs.select {|k,v| 
+          v.kind_of?(Array) || v.kind_of?(::Dupe::Database::Record)
+        }.collect {|i| i[1]}
       end
       
     end

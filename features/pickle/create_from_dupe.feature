@@ -6,7 +6,8 @@ Feature: I can easily create models from dupe
   Scenario: I create a recipe, and see if it looks right
     Given a recipe exists
     Then a recipe should exist
-    
+  
+	@basic_test
   Scenario: I create a recipe with specific name, and see if it looks right
     Given a recipe exists with name: "Chicken Recipe"
     Then a recipe should exist with name: "Chicken Recipe"

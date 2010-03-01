@@ -1,65 +1,56 @@
-require 'pickle/parser/matchers'
-
 module Pickle
   class Parser
-    include Matchers
-    
-    attr_reader :config
-    
-    def initialize(options = {})
-      @config = options[:config] || raise(ArgumentError, "Parser.new requires a :config")
-    end
-    
-    # given a string like 'foo: "bar", bar: "baz"' returns {"foo" => "bar", "bar" => "baz"}
-    def parse_fields(fields)
-      if fields.blank?
-        {}
-      elsif fields =~ /^#{match_fields}$/
-        fields.scan(/(#{match_field})(?:,|$)/).inject({}) do |m, match|
-          m.merge(parse_field(match[0]))
+    def parse_field_with_multi_values(field)
+      # Would handle multiple values like "ingredients: [ingredient \"one\", ingredient \"two"\]"
+      if session && field =~ /^(\w+): #{match_model_in_values}$/
+        field_key = $1
+        
+        models = []
+        values = parse_values(field)
+        values.each do |value|
+          if value =~ /^#{capture_model}$/
+            models << session.model($1)
+          end
         end
-      else
-        raise ArgumentError, "The fields string is not in the correct format.\n\n'#{fields}' did not match: #{match_fields}" 
+    
+        {field_key => models}
+      else  
+        parse_field_without_multi_values(field)
       end
+      
     end
     
-    # given a string like 'foo: expr' returns {key => value}
-    def parse_field(field)
-      if field =~ /^#{capture_key_and_value_in_field}$/
-        { $1 => eval($2) }
-      else
-        raise ArgumentError, "The field argument is not in the correct format.\n\n'#{field}' did not match: #{match_field}"
-      end
+    alias_method_chain :parse_field, :multi_values
+    
+    def match_field
+      "(?:\\w+: #{match_values})"
     end
     
-    # returns really underscored name
-    def canonical(str)
-      str.to_s.underscore.gsub(' ','_').gsub('/','_')
+    def match_value
+      "(?:#{match_model}|\"#{match_quoted}\"|nil|true|false|[+-]?\\d+(?:\\.\\d+)?)"
     end
     
-    # return [factory_name, name or integer index]
-    def parse_model(model_name)
-      apply_mappings!(model_name)
-      if /#{capture_index} #{capture_factory}$/ =~ model_name
-        [canonical($2), parse_index($1)]
-      elsif /#{capture_factory}#{capture_name_in_label}?$/ =~ model_name
-        [canonical($1), canonical($2)]
-      end
+    def match_values
+      # like [step "one", step "two"]
+      "(?:\\[?(?:#{match_value}, )*#{match_value}\\]?)"
+    end
+    
+    def match_model_in_values
+      "\\[?(?:#{match_model}, )*#{match_model}\\]?"
     end
   
-    def parse_index(index)
-      case index
-      when nil, '', 'last' then -1
-      when /#{capture_number_in_ordinal}/ then $1.to_i - 1
-      when 'first' then 0
-      end
-    end
-
   private
-    def apply_mappings!(string)
-      config.mappings.each do |mapping|
-        string.sub! /^#{mapping.search}$/, mapping.replacement
+    
+    # Given field of "ingredients: [ingredient \"one\", ingredient \"two\"]" return
+    # ["ingredient \"one\"","ingredient \"two\""]
+    def parse_values(field)
+      if field =~ /^\w+: (#{match_values})$/
+        $1.scan(/(#{match_value})(?:,|$|\])/).inject([]) do |m, match|
+          m << match[0]
+        end
+        #TODO GC 02/26/2010 - What to do if it does not match the values pattern?
       end
     end
+      
   end
 end
