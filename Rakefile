@@ -11,7 +11,7 @@ begin
     gem.homepage = "http://github.com/iawgens/pickle-dupe"
     gem.authors = ["iawgens"]
     gem.add_dependency "pickle",">=0.2.1"
-    gem.add_dependency "dupe",">=0.4.7"
+    gem.add_dependency "dupe",">=0.4.8"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
