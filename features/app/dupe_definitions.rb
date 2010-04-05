@@ -46,6 +46,10 @@ Dupe.define :ingredient do |ingredient|
   end
 end
 
+Dupe.define :undefined_model do |undefined_model|
+  
+end
+
 def labelize(name)
   name.gsub(/\s/,'-').downcase
 end

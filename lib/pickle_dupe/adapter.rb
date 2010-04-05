@@ -17,7 +17,12 @@ module Pickle
       end
       
       def initialize(model)
-        @klass, @name = model.name.to_s.classify.constantize, model.name.to_s
+        # Not all dupe models has an associated model class
+        # so we dynamically create them here
+        unless @klass = (model.name.to_s.classify.constantize rescue nil)
+          Object.const_set(model.name.to_s.classify, Class.new(ActiveResource::Base))
+        end
+        @name = model.name.to_s
       end
     
       def create(attrs = {})
@@ -74,21 +79,13 @@ module Pickle
       def assign_missing_associations(duped_object, attrs)
         association_objects = collect_association_objects(attrs)
         association_objects.each {|association_object|
-          
           # When a pickle step causes Dupe to do the following:
           # 
           #  Dupe.create(:direction_step, :recipe => @recipe)
           #
           # Then duped_object would be of class Dupe::DirectionStep and association_object would be of
           # class Dupe::Recipe.
-          #
-          if association_object.kind_of?(Array)
-            association_object.each {|a|
-              assign_association(a, duped_object)
-            }
-          else
-            assign_association(association_object, duped_object)
-          end
+          assign_association(association_object, duped_object)
         }
       end
       
@@ -112,7 +109,7 @@ module Pickle
       def collect_association_objects(attrs)
         attrs.select {|k,v| 
           v.kind_of?(Array) || v.kind_of?(::Dupe::Database::Record)
-        }.collect {|i| i[1]}
+        }.collect {|i| i[1]}.flatten
       end
       
     end
