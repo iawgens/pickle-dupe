@@ -20,16 +20,18 @@ module Pickle
         # Not all dupe models has an associated model class
         # so we dynamically create them here
         unless @klass = (model.name.to_s.classify.constantize rescue nil)
-          Object.const_set(model.name.to_s.classify, Class.new(ActiveResource::Base))
+          class_handler = Object.const_set(model.name.to_s.classify, Class.new(ActiveResource::Base))
+          class_handler.site = 'http://test.com'
+          puts "WARNING: #{model.name} model is defined dynamically because there was a dupe definition but no model was defined"
         end
         @name = model.name.to_s
       end
-    
+
       def create(attrs = {})
         duped_object = ::Dupe.create(@name, attrs)
         assign_missing_associations(duped_object, attrs) unless attrs.blank?
-        
-        return duped_object
+
+        return @klass.send(:find, duped_object.id)
       end
       
     private
@@ -94,11 +96,14 @@ module Pickle
         has_many_association = has_one_association.to_s.pluralize.to_sym #=> :direction_steps
         
         # The following would check for the existence of the key :direction_steps
-        # in the duped recipe's definition 
-        if association_object.__model__.schema.attribute_templates.keys.include?(has_many_association)
-          association_object[has_many_association] << duped_object
+        # in the duped recipe's definition
+        association_duped_object = ::Dupe.find(association_object.class.name.underscore){|d| 
+            d.id == association_object.id
+          }
+        if association_duped_object.__model__.schema.attribute_templates.keys.include?(has_many_association)
+          association_duped_object[has_many_association] << duped_object
         else #assume it's a has_one association
-          association_object[has_one_association] = duped_object
+          association_duped_object[has_one_association] = duped_object
         end
       end
       
@@ -108,7 +113,7 @@ module Pickle
       # :association => [<#Duped...>] will return [[<#Duped...>,<#Duped...>],<#Duped...>]
       def collect_association_objects(attrs)
         attrs.select {|k,v| 
-          v.kind_of?(Array) || v.kind_of?(::Dupe::Database::Record)
+          v.kind_of?(Array) || v.kind_of?(ActiveResource::Base)
         }.collect {|i| i[1]}.flatten
       end
       

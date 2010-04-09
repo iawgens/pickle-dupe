@@ -1,5 +1,8 @@
 class AbstractResource < ActiveResource::Base
   self.site = ''
+  def to_param
+    label rescue super
+  end
 end
 
 class Recipe < AbstractResource

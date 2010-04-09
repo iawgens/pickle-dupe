@@ -16,6 +16,10 @@ In order to use pickle with dupe, you need to add :dupe to your pickle's configu
     Pickle.configure do |config|
       config.adapters = [:dupe]
     end
+    
+== TODO
+* Spec for dynamically creating ActiveResource model when there is dupe definition but no model defined, making sure the
+site value is set.
 
 == Copyright
 
