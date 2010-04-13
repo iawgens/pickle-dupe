@@ -5,8 +5,8 @@ Pickle-dupe is an add-on to pickle that works with Dupe, an Active Resource mock
 == Installation
 
 Pickle-dupe requires the following gems
-* pickle
-* dupe
+* pickle 0.2.1 http://github.com/ianwhite/pickle
+* dupe 0.5.1 http://github.com/moonmaster9000/dupe/
 
 To install pickle-dupe gem, do:
     sudo gem install pickle-dupe
